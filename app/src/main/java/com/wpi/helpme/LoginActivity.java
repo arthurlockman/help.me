@@ -155,10 +155,6 @@ public class LoginActivity extends AppCompatActivity {
      * Signs the current user out of the application with their Google account.
      */
     private void signOutGoogleAccount() {
-        if (profile != null) {
-            Log.d(TAG, profile.toString());
-        }
-
         // Firebase sign out
         mFAuth.signOut();
 
@@ -233,24 +229,25 @@ public class LoginActivity extends AppCompatActivity {
      *         The email address.
      */
     private void writeProfile(final String userId, final String userName, final String email) {
-        DatabaseProfileWriter.getInstance().retrieveProfile(mDatabaseRef, userId, new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() == null) {
-                    profile = new UserProfile(userId, email, userName);
-                        Log.d(TAG, "Profile does not exist. Running callback...");
-                    DatabaseProfileWriter.getInstance()
-                            .writeProfile(mDatabaseRef, profile);
-                    Log.d(TAG, profile.toString());
-                } else {
-                    profile = dataSnapshot.getValue(UserProfile.class);
-                }
-            }
+        DatabaseProfileWriter.getInstance()
+                .retrieveProfile(mDatabaseRef, userId, new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() == null) {
+                            profile = new UserProfile(userId, email, userName);
+                            Log.d(TAG, "Profile does not exist. Writing new profile...");
+                            DatabaseProfileWriter.getInstance()
+                                    .writeProfile(mDatabaseRef, profile);
+                        } else {
+                            Log.d(TAG, "Profile exists. Getting from database...");
+                            profile = dataSnapshot.getValue(UserProfile.class);
+                        }
+                    }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "profile-ValueEventListener:onCancelled:" + databaseError);
-            }
-        });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d(TAG, "profile-ValueEventListener:onCancelled:" + databaseError);
+                    }
+                });
     }
 }
