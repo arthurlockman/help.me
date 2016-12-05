@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
 import com.wpi.helpme.com.wpi.helpme.database.UserProfile;
 
 public class LoginActivity extends AppCompatActivity {
@@ -37,14 +38,8 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleApiClient mApiClient;
     private FirebaseAuth mFAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private DatabaseReference mDatabase;
-
-    private void writeNewProfile(String userId, String fullName, String email) {
-        UserProfile profile = new UserProfile(fullName, email);
-        mDatabase.child("users").child(userId).setValue(profile);
-
-        Log.d(TAG, "Wrote user " + profile.getUserName() + " to database");
-    }
+    private DatabaseReference mDatabaseRef;
+    private UserProfile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +88,8 @@ public class LoginActivity extends AppCompatActivity {
                     signOutGoogleAccount();
                 } else {
                     // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Already signed out", Toast.LENGTH_SHORT)
+                    Toast.makeText(getApplicationContext(), "Already signed out",
+                            Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -139,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         // Get Firebase reference
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mFAuth = FirebaseAuth.getInstance();
 
         // Listener for Firebase state changes
@@ -168,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onResult(@NonNull Status status) {
                 Log.d(TAG, "Signed out");
-                mDatabase.onDisconnect();
+                mDatabaseRef.onDisconnect();
             }
         });
     }
@@ -210,15 +206,28 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithCredential", task.getException());
                                 } else {
                                     // Get new Firebase instance after logging in
-                                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                                    mDatabaseRef = FirebaseDatabase.getInstance().getReference();
                                     Log.d(TAG, "Firebase database connected");
 
                                     FirebaseUser user = mFAuth.getCurrentUser();
-                                    writeNewProfile(user.getUid(), user.getDisplayName(), user.getEmail());
+                                    writeProfile(user.getUid(), user.getDisplayName(),
+                                            user.getEmail());
                                 }
                             }
                         });
             }
         }
+    }
+
+    private void writeProfile(String userId, String fullName, String email) {
+        profile = new UserProfile(userId, fullName, email);
+        DatabaseProfileWriter.getInstance().onProfileExists(mDatabaseRef,
+                profile, false, new Runnable() {
+                    @Override
+                    public void run() {
+                        DatabaseProfileWriter.getInstance()
+                                .writeProfile(mDatabaseRef, profile);
+                    }
+                });
     }
 }
