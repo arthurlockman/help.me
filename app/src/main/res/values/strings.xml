@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Help.me</string>
+    <string name="title_activity_location">Location</string>
 </resources>
