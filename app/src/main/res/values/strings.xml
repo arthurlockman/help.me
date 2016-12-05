@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Help.me</string>
+    <string name="helpme">Help Me!</string>
+    <string name="selectTopic">Select a Topic</string>
+    <string name="notes">Notes</string>
+    <string name="attachPhoto">Attach Photo</string>
+    <string name="next">Next</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="timeInfo">Until when is this request valid?</string>
+    <string name="confirm">Confirm and Get Help</string>
 </resources>
