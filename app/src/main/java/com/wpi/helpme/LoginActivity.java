@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.wpi.helpme.com.wpi.helpme.database.UserProfile;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -36,7 +37,14 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleApiClient mApiClient;
     private FirebaseAuth mFAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private DatabaseReference firebase;
+    private DatabaseReference mDatabase;
+
+    private void writeNewProfile(String userId, String fullName, String email) {
+        UserProfile profile = new UserProfile(fullName, email);
+        mDatabase.child("users").child(userId).setValue(profile);
+
+        Log.d(TAG, "Wrote user " + profile.getUserName() + " to database");
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +65,12 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     // TODO Remove toast
                     Toast.makeText(getApplicationContext(),
-                            "Already signed in as " + user.getDisplayName(), Toast.LENGTH_LONG)
+                            "Already signed in as " + user.getDisplayName(), Toast.LENGTH_SHORT)
                             .show();
                 } else {
                     // TODO Remove toast
                     Toast.makeText(getApplicationContext(), "Signing in with Google",
-                            Toast.LENGTH_LONG)
+                            Toast.LENGTH_SHORT)
                             .show();
 
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
@@ -80,12 +88,12 @@ public class LoginActivity extends AppCompatActivity {
                 // If user exists, start sign out process
                 if (mFAuth.getCurrentUser() != null) {
                     // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Signed out", Toast.LENGTH_LONG)
+                    Toast.makeText(getApplicationContext(), "Signed out", Toast.LENGTH_SHORT)
                             .show();
                     signOutGoogleAccount();
                 } else {
                     // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Already signed out", Toast.LENGTH_LONG)
+                    Toast.makeText(getApplicationContext(), "Already signed out", Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -131,7 +139,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         // Get Firebase reference
-        firebase = FirebaseDatabase.getInstance().getReference();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mFAuth = FirebaseAuth.getInstance();
 
         // Listener for Firebase state changes
@@ -146,6 +154,37 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    /**
+     * Signs the current user out of the application with their Google account.
+     */
+    private void signOutGoogleAccount() {
+        // Firebase sign out
+        mFAuth.signOut();
+
+        // Google sign out
+        Auth.GoogleSignInApi.signOut(mApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                Log.d(TAG, "Signed out");
+                mDatabase.onDisconnect();
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mFAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     @Override
@@ -171,44 +210,15 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithCredential", task.getException());
                                 } else {
                                     // Get new Firebase instance after logging in
-                                    firebase = FirebaseDatabase.getInstance().getReference();
-                                    Toast.makeText(getApplicationContext(),
-                                            "Firebase database connected", Toast.LENGTH_LONG);
+                                    mDatabase = FirebaseDatabase.getInstance().getReference();
+                                    Log.d(TAG, "Firebase database connected");
+
+                                    FirebaseUser user = mFAuth.getCurrentUser();
+                                    writeNewProfile(user.getUid(), user.getDisplayName(), user.getEmail());
                                 }
                             }
                         });
             }
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mFAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mFAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
-    /**
-     * Signs the current user out of the application with their Google account.
-     */
-    private void signOutGoogleAccount() {
-        // Firebase sign out
-        mFAuth.signOut();
-
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                Log.d(TAG, "Signed out");
-                firebase.onDisconnect();
-            }
-        });
     }
 }
