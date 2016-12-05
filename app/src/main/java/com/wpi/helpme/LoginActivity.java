@@ -25,8 +25,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
 import com.wpi.helpme.com.wpi.helpme.database.UserProfile;
 
@@ -63,11 +66,6 @@ public class LoginActivity extends AppCompatActivity {
                             "Already signed in as " + user.getDisplayName(), Toast.LENGTH_SHORT)
                             .show();
                 } else {
-                    // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Signing in with Google",
-                            Toast.LENGTH_SHORT)
-                            .show();
-
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
                     startActivityForResult(signInIntent, RC_LOGIN);
                 }
@@ -101,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             View v = signOutButton.getChildAt(i);
 
             if (v instanceof TextView) {
+                // TODO Move to strings
                 TextView tv = (TextView) v;
                 tv.setText("Sign out");
                 return;
@@ -156,6 +155,10 @@ public class LoginActivity extends AppCompatActivity {
      * Signs the current user out of the application with their Google account.
      */
     private void signOutGoogleAccount() {
+        if (profile != null) {
+            Log.d(TAG, profile.toString());
+        }
+
         // Firebase sign out
         mFAuth.signOut();
 
@@ -219,15 +222,35 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void writeProfile(String userId, String fullName, String email) {
-        profile = new UserProfile(userId, fullName, email);
-        DatabaseProfileWriter.getInstance().onProfileExists(mDatabaseRef,
-                profile, false, new Runnable() {
-                    @Override
-                    public void run() {
-                        DatabaseProfileWriter.getInstance()
-                                .writeProfile(mDatabaseRef, profile);
-                    }
-                });
+    /**
+     * Writes the user profile on log in if it does not already exist in the database.
+     *
+     * @param userId
+     *         The unique user ID.
+     * @param userName
+     *         The display user name.
+     * @param email
+     *         The email address.
+     */
+    private void writeProfile(final String userId, final String userName, final String email) {
+        DatabaseProfileWriter.getInstance().retrieveProfile(mDatabaseRef, userId, new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.getValue() == null) {
+                    profile = new UserProfile(userId, email, userName);
+                        Log.d(TAG, "Profile does not exist. Running callback...");
+                    DatabaseProfileWriter.getInstance()
+                            .writeProfile(mDatabaseRef, profile);
+                    Log.d(TAG, profile.toString());
+                } else {
+                    profile = dataSnapshot.getValue(UserProfile.class);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.d(TAG, "profile-ValueEventListener:onCancelled:" + databaseError);
+            }
+        });
     }
 }
