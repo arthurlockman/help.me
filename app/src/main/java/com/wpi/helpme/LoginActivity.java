@@ -26,8 +26,13 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
+import com.wpi.helpme.com.wpi.helpme.database.UserProfile;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -37,7 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleApiClient mApiClient;
     private FirebaseAuth mFAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private DatabaseReference firebase;
+    private DatabaseReference mDatabaseRef;
+    private UserProfile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +64,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (user != null) {
                     // TODO Remove toast
                     Toast.makeText(getApplicationContext(),
-                            "Already signed in as " + user.getDisplayName(), Toast.LENGTH_LONG)
+                            "Already signed in as " + user.getDisplayName(), Toast.LENGTH_SHORT)
                             .show();
                 } else {
-                    // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Signing in with Google",
-                            Toast.LENGTH_LONG)
-                            .show();
-
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
                     startActivityForResult(signInIntent, RC_LOGIN);
                 }
@@ -81,12 +82,13 @@ public class LoginActivity extends AppCompatActivity {
                 // If user exists, start sign out process
                 if (mFAuth.getCurrentUser() != null) {
                     // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Signed out", Toast.LENGTH_LONG)
+                    Toast.makeText(getApplicationContext(), "Signed out", Toast.LENGTH_SHORT)
                             .show();
                     signOutGoogleAccount();
                 } else {
                     // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Already signed out", Toast.LENGTH_LONG)
+                    Toast.makeText(getApplicationContext(), "Already signed out",
+                            Toast.LENGTH_SHORT)
                             .show();
                 }
             }
@@ -98,6 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             View v = signOutButton.getChildAt(i);
 
             if (v instanceof TextView) {
+                // TODO Move to strings
                 TextView tv = (TextView) v;
                 tv.setText("Sign out");
                 return;
@@ -132,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         // Get Firebase reference
-        firebase = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mFAuth = FirebaseAuth.getInstance();
 
         // Listener for Firebase state changes
@@ -147,6 +150,37 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+    }
+
+    /**
+     * Signs the current user out of the application with their Google account.
+     */
+    private void signOutGoogleAccount() {
+        // Firebase sign out
+        mFAuth.signOut();
+
+        // Google sign out
+        Auth.GoogleSignInApi.signOut(mApiClient).setResultCallback(new ResultCallback<Status>() {
+            @Override
+            public void onResult(@NonNull Status status) {
+                Log.d(TAG, "Signed out");
+                mDatabaseRef.onDisconnect();
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mFAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     @Override
@@ -172,9 +206,12 @@ public class LoginActivity extends AppCompatActivity {
                                     Log.d(TAG, "signInWithCredential", task.getException());
                                 } else {
                                     // Get new Firebase instance after logging in
-                                    firebase = FirebaseDatabase.getInstance().getReference();
-                                    Toast.makeText(getApplicationContext(),
-                                            "Firebase database connected", Toast.LENGTH_LONG);
+                                    mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+                                    Log.d(TAG, "Firebase database connected");
+
+                                    FirebaseUser user = mFAuth.getCurrentUser();
+                                    writeProfile(user.getUid(), user.getDisplayName(),
+                                            user.getEmail());
                                 }
                             }
                         });
@@ -182,42 +219,43 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        mFAuth.addAuthStateListener(mAuthListener);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mFAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
     /**
-     * Signs the current user out of the application with their Google account.
+     * Writes the user profile on log in if it does not already exist in the database.
+     *
+     * @param userId
+     *         The unique user ID.
+     * @param userName
+     *         The display user name.
+     * @param email
+     *         The email address.
      */
-    private void signOutGoogleAccount() {
-        // Firebase sign out
-        mFAuth.signOut();
+    private void writeProfile(final String userId, final String userName, final String email) {
+        DatabaseProfileWriter.getInstance()
+                .retrieveProfile(mDatabaseRef, userId, new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() == null) {
+                            profile = new UserProfile(userId, email, userName);
+                            Log.d(TAG, "Profile does not exist. Writing new profile...");
+                            DatabaseProfileWriter.getInstance()
+                                    .writeProfile(mDatabaseRef, profile);
+                        } else {
+                            Log.d(TAG, "Profile exists. Getting from database...");
+                            profile = dataSnapshot.getValue(UserProfile.class);
+                        }
+                    }
 
-        // Google sign out
-        Auth.GoogleSignInApi.signOut(mApiClient).setResultCallback(new ResultCallback<Status>() {
-            @Override
-            public void onResult(@NonNull Status status) {
-                Log.d(TAG, "Signed out");
-                firebase.onDisconnect();
-            }
-        });
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.d(TAG, "profile-ValueEventListener:onCancelled:" + databaseError);
+                    }
+                });
     }
 
     //TODO - find URI for location activity
 
-    public void openLocationActivity(){
-        Intent getLocation = new Intent(Action.TYPE_VIEW, com.wpi.helpme.LocationActivity);
-        startActivity();
+    public void openLocationActivity(View v){
+        Intent getLocation = new Intent(this, LocationActivity.class);
+        startActivity(getLocation);
     }
-
 }
