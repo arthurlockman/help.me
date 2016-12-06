@@ -45,6 +45,22 @@
             android:name=".LocationActivity"
             android:label="@string/title_activity_location"
         </activity>
+        <activity android:name=".RequestMain">
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location"
+        </activity>
+        <activity android:name=".RequestDescription">
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location"
+        </activity>
+        <activity android:name=".RequestConfirmation">
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location"
+        </activity>
+        <activity android:name=".RequestTime">
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location"
+        </activity>
     </application>
 
 </manifest>
