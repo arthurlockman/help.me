@@ -254,9 +254,8 @@ public class LoginActivity extends AppCompatActivity {
 
     //TODO - find URI for location activity
 
-    public void openLocationActivity(){
-        Intent getLocation = new Intent(Action.TYPE_VIEW, com.wpi.helpme.LocationActivity);
-        startActivity();
+    public void openLocationActivity(View v){
+        Intent getLocation = new Intent(this, LocationActivity.class);
+        startActivity(getLocation);
     }
-
 }
