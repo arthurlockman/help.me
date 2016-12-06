@@ -258,4 +258,9 @@ public class LoginActivity extends AppCompatActivity {
         Intent getLocation = new Intent(this, LocationActivity.class);
         startActivity(getLocation);
     }
+
+    public void openRequestActivity(View v){
+        Intent getLocation = new Intent(this, RequestMain.class);
+        startActivity(getLocation);
+    }
 }
