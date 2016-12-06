@@ -27,5 +27,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="visible"/>
+
+        <Button
+            android:text="Get your Location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button3"
+            android:layout_weight="1"
+            android:onClick="openLocationActivity" />
     </LinearLayout>
+
+
 </RelativeLayout>
