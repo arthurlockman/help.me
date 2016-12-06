@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -211,4 +212,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    //TODO - find URI for location activity
+
+    public void openLocationActivity(){
+        Intent getLocation = new Intent(Action.TYPE_VIEW, com.wpi.helpme.LocationActivity);
+        startActivity();
+    }
+
 }
