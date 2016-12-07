@@ -9,7 +9,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -26,13 +25,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
-import com.wpi.helpme.com.wpi.helpme.database.UserProfile;
+import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -43,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mFAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabaseRef;
-    private UserProfile profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,7 +130,7 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
         // Get Firebase reference
-        mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        mDatabaseRef = HelpMeApplication.getInstance().getDatabaseReference();
         mFAuth = FirebaseAuth.getInstance();
 
         // Listener for Firebase state changes
@@ -203,15 +198,12 @@ public class LoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 // Log if successful or not
                                 if (!task.isSuccessful()) {
-                                    Log.d(TAG, "signInWithCredential", task.getException());
+                                    Log.d(TAG, "signInWithCredential:", task.getException());
                                 } else {
-                                    // Get new Firebase instance after logging in
-                                    mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-                                    Log.d(TAG, "Firebase database connected");
-
+                                    Log.d(TAG, "signInWithCredential:successful");
                                     FirebaseUser user = mFAuth.getCurrentUser();
-                                    writeProfile(user.getUid(), user.getDisplayName(),
-                                            user.getEmail());
+                                    loadProfile(user.getUid(),
+                                            user.getEmail(), user.getDisplayName());
                                 }
                             }
                         });
@@ -224,42 +216,22 @@ public class LoginActivity extends AppCompatActivity {
      *
      * @param userId
      *         The unique user ID.
-     * @param userName
-     *         The display user name.
      * @param email
      *         The email address.
+     * @param userName
+     *         The display user name.
      */
-    private void writeProfile(final String userId, final String userName, final String email) {
-        DatabaseProfileWriter.getInstance()
-                .retrieveProfile(mDatabaseRef, userId, new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.getValue() == null) {
-                            profile = new UserProfile(userId, email, userName);
-                            Log.d(TAG, "Profile does not exist. Writing new profile...");
-                            DatabaseProfileWriter.getInstance()
-                                    .writeProfile(mDatabaseRef, profile);
-                        } else {
-                            Log.d(TAG, "Profile exists. Getting from database...");
-                            profile = dataSnapshot.getValue(UserProfile.class);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.d(TAG, "profile-ValueEventListener:onCancelled:" + databaseError);
-                    }
-                });
+    private void loadProfile(String userId, String email, String userName) {
+        DatabaseProfileWriter
+                .loadDatabaseProfile(HelpMeApplication.getInstance().getDatabaseReference(), new UserProfile(userId, email, userName));
     }
 
-    //TODO - find URI for location activity
-
-    public void openLocationActivity(View v){
+    public void openLocationActivity(View v) {
         Intent getLocation = new Intent(this, LocationActivity.class);
         startActivity(getLocation);
     }
 
-    public void openRequestActivity(View v){
+    public void openRequestActivity(View v) {
         Intent getLocation = new Intent(this, RequestMain.class);
         startActivity(getLocation);
     }
