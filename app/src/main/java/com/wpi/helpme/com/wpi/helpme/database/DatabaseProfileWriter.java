@@ -32,7 +32,7 @@ public class DatabaseProfileWriter {
         final DatabaseReference dbRef = db.child(PROFILES_DIR + profile.getUserId());
 
         // Add one time listener to "retrieve" value
-        dbRef.addListenerForSingleValueEvent(new LoadUserProfileValueEventListener(db, profile));
+        dbRef.addListenerForSingleValueEvent(new LoadUserProfileValueEventListener(profile));
     }
 
     /**

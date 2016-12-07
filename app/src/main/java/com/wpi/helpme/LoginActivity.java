@@ -226,11 +226,19 @@ public class LoginActivity extends AppCompatActivity {
                 .loadDatabaseProfile(HelpMeApplication.getInstance().getDatabaseReference(), new UserProfile(userId, email, userName));
     }
 
+    /**
+     * Launches the location activity.
+     * @param v The {@link View} associated with this callback.
+     */
     public void openLocationActivity(View v) {
         Intent getLocation = new Intent(this, LocationActivity.class);
         startActivity(getLocation);
     }
 
+    /**
+     * Launches the help request activity.
+     * @param v The {@link View} associated with this callback.
+     */
     public void openRequestActivity(View v) {
         Intent getLocation = new Intent(this, RequestMain.class);
         startActivity(getLocation);
