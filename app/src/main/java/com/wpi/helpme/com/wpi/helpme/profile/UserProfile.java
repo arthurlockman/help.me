@@ -1,4 +1,4 @@
-package com.wpi.helpme.com.wpi.helpme.database;
+package com.wpi.helpme.com.wpi.helpme.profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +36,9 @@ public class UserProfile {
         this.email = email;
         this.userName = userName;
 
-        filters.add("java");
-        filters.add("databases");
-        filters.add("racket");
+        filters.add("test_value_1");
+        filters.add("test_value_2");
+        filters.add("test_value_3");
     }
 
     /**
