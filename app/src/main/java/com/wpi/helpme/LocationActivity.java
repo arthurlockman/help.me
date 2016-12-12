@@ -30,6 +30,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.wpi.helpme.database.DatabaseRequestReader;
+import com.wpi.helpme.database.HelpRequest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //Class take and modified from online google tutorial / demo: https://github.com/googlemaps/android-samples/tree/master/tutorials/CurrentPlaceDetailsOnMap
 
@@ -67,6 +71,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     private static final String KEY_CAMERA_POSITION = "camera_position";
     private static final String KEY_LOCATION = "location";
 
+    private static final List<HelpRequest> helpRequests = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +87,15 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         // Build the Play services client for use by the Fused Location Provider and the Places API.
         buildGoogleApiClient();
         mGoogleApiClient.connect();
+
+        DatabaseRequestReader.readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(), new Runnable() {
+            @Override
+            public void run() {
+                helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
+                updateMarkers();
+                Log.d(TAG, "Retrieved new requests and updated markers.");
+            }
+        });
     }
 
     /**
@@ -315,6 +330,9 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
             return;
         }
 
+        // Clear map of markers
+        mMap.clear();
+
         if (mLocationPermissionGranted) {
             // Get the businesses and other points of interest located
             // nearest to the device's current location.
@@ -342,14 +360,17 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                     likelyPlaces.release();
                 }
             });
+
+            for (HelpRequest req : helpRequests) {
+                LatLng loc = new LatLng(req.getLatitude(), req.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(loc).title(req.getTitleText()).snippet(req.getBodyText()));
+            }
         } else {
             mMap.addMarker(new MarkerOptions()
                     .position(mDefaultLocation)
                     .title("title")
                     .snippet("info"));
         }
-
-        DatabaseRequestReader.readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference());
     }
 
     /**
