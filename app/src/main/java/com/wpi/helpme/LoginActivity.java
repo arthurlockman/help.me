@@ -145,6 +145,16 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         };
+
+        this.checkAlreadyLoggedIn();
+    }
+
+    private void checkAlreadyLoggedIn() {
+        FirebaseUser user = mFAuth.getCurrentUser();
+        if (user != null) {
+            // Loads profile to memory
+            loadProfile(user.getUid(), user.getEmail(), user.getDisplayName());
+        }
     }
 
     /**

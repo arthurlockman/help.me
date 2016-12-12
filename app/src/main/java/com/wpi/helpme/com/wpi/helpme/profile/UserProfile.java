@@ -11,6 +11,7 @@ public class UserProfile {
     private String userName;
     private String email;
     private List<String> filters = new ArrayList<>();
+    private String deviceToken;
 
     /**
      * Creates an empty UserProfile instance.
@@ -19,6 +20,21 @@ public class UserProfile {
         this.userId = "";
         this.email = "";
         this.userName = "";
+        this.deviceToken = "";
+    }
+
+    /**
+     * Creates a UserProfile instance with a dummy device token.
+     *
+     * @param userId
+     *         The unique user ID.
+     * @param email
+     *         The email address.
+     * @param userName
+     *         The display user name.
+     */
+    public UserProfile(String userId, String email, String userName) {
+        this(userId, email, userName, "");
     }
 
     /**
@@ -30,11 +46,14 @@ public class UserProfile {
      *         The email address.
      * @param userName
      *         The display user name.
+     * @param deviceToken
+     *         The registration token for push notifications.
      */
-    public UserProfile(String userId, String email, String userName) {
+    public UserProfile(String userId, String email, String userName, String deviceToken) {
         this.userId = userId;
         this.email = email;
         this.userName = userName;
+        this.deviceToken = deviceToken;
 
         filters.add("test_value_1");
         filters.add("test_value_2");
@@ -52,6 +71,7 @@ public class UserProfile {
                 ", userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
                 ", filters=" + filters +
+                ", deviceToken=" + deviceToken +
                 '}';
     }
 
@@ -89,5 +109,24 @@ public class UserProfile {
      */
     public List<String> getFilters() {
         return filters;
+    }
+
+    /**
+     * Returns the device token for notifications.
+     *
+     * @return a String
+     */
+    public String getDeviceToken() {
+        return deviceToken;
+    }
+
+    /**
+     * Updates the value of the device token.
+     *
+     * @param deviceToken
+     *         The new registration token.
+     */
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
     }
 }
