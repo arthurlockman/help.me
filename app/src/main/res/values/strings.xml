@@ -23,4 +23,5 @@
     <string name="edit_filter_remove_filter_text">Remove</string>
     <string name="edit_filter_save_filter_text">Save</string>
     <string name="edit_filter_add_item">Add...</string>
+    <string name="edit_filter_save_filters">Save Filters</string>
 </resources>

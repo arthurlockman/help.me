@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -112,6 +113,17 @@ public class EditFiltersActivity extends AppCompatActivity {
                 runOnUiThread(showDialog);
             }
         });
+
+        Button saveButton = (Button) this.findViewById(R.id.save_filters);
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * @see {@link android.view.View.OnClickListener#onClick(View)}
+             */
+            @Override
+            public void onClick(View view) {
+                saveFilters();
+            }
+        });
     }
 
     /**
@@ -153,7 +165,13 @@ public class EditFiltersActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        this.saveFilters();
+    }
 
+    /**
+     * Syncs profile to database with new filters.
+     */
+    private void saveFilters() {
         // Sync profile when closing this activity so users do not have to manually save
         HelpMeApplication.getInstance().syncProfileToDatabase();
     }
