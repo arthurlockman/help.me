@@ -50,6 +50,9 @@ public class EditFiltersActivity extends AppCompatActivity {
                 final EditText textView = (EditText) dialogView
                         .findViewById(R.id.edit_filter_dialog_text);
 
+                textView.setText(adapterView.getItemAtPosition(itemIndex).toString());
+                textView.selectAll();
+
                 dialogBuilder.setCancelable(true)
                         .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                             @Override
