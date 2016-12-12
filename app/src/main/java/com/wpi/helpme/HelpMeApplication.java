@@ -1,6 +1,7 @@
 package com.wpi.helpme;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -11,7 +12,7 @@ import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
  * This class represents the high level application that persists over all activities.
  */
 public class HelpMeApplication extends Application {
-
+    private static String TAG = "HelpMeApplication";
     private static HelpMeApplication instance = null;
     private static UserProfile profile = null;
     private static DatabaseReference databaseReference;
@@ -54,5 +55,13 @@ public class HelpMeApplication extends Application {
      */
     public synchronized void storeProfile(UserProfile profile) {
         this.profile = profile;
+    }
+
+    /**
+     * Syncs the current user profile to the database.
+     */
+    public synchronized void syncProfileToDatabase() {
+        Log.d(TAG, "Syncing profile to database...");
+        DatabaseProfileWriter.writeProfile(getDatabaseReference(), getUserProfile());
     }
 }

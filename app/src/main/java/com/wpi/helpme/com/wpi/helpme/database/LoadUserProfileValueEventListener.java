@@ -1,5 +1,7 @@
 package com.wpi.helpme.com.wpi.helpme.database;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.database.DataSnapshot;
@@ -29,16 +31,37 @@ public class LoadUserProfileValueEventListener implements ValueEventListener {
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        String token = this.getDeviceToken();
+
         if (dataSnapshot.getValue() == null) {
+            if (token.length() > 0) {
+                profile.setDeviceToken(token);
+            }
+
             Log.d(TAG, "Writing new profile.");
-            DatabaseProfileWriter
-                    .writeProfile(HelpMeApplication.getInstance().getDatabaseReference(), profile);
         } else {
             Log.d(TAG, "Getting profile from database...");
             profile = dataSnapshot.getValue(UserProfile.class);
+
+            profile.setDeviceToken(token);
         }
 
         HelpMeApplication.getInstance().storeProfile(profile);
+        HelpMeApplication.getInstance().syncProfileToDatabase();
+    }
+
+    /**
+     * Retrieves the device token from the shared preferences.
+     *
+     * @return a String
+     */
+    private String getDeviceToken() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(
+                HelpMeApplication.getInstance().getApplicationContext());
+        String token = preferences.getString("registration_id", "");
+
+        Log.d(TAG, "Device token is: " + token);
+        return token;
     }
 
     @Override
