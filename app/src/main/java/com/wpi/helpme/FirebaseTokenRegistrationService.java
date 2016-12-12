@@ -1,40 +1,40 @@
 package com.wpi.helpme;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-public class FirebaseTokenRegistrationService extends FirebaseInstanceIdService
-{
+/**
+ * This class represents the retrieval service that gets the refreshed device token.
+ */
+public class FirebaseTokenRegistrationService extends FirebaseInstanceIdService {
     private static final String TAG = "TokenRegisterService";
-    public FirebaseTokenRegistrationService()
-    {
+
+    /**
+     * Creates a {@link FirebaseTokenRegistrationService} instance.
+     */
+    public FirebaseTokenRegistrationService() {
     }
 
+    /**
+     * @see {@link FirebaseInstanceIdService#onTokenRefresh()}
+     */
     @Override
-    public void onTokenRefresh()
-    {
+    public void onTokenRefresh() {
         super.onTokenRefresh();
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
-
         this.syncNewToken(refreshedToken);
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("registration_id", refreshedToken);
-        editor.apply();
+        HelpMeApplication.getInstance().getPreferencesManager().updateDeviceToken(refreshedToken);
     }
 
-    private String getTokenFromPrefs()
-    {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        return preferences.getString("registration_id", null);
-    }
-
+    /**
+     * Syncs the profile with the new token to the database.
+     *
+     * @param token
+     *         The refreshed device token.
+     */
     private void syncNewToken(String token) {
         try {
             HelpMeApplication.getInstance().getUserProfile().setDeviceToken(token);
