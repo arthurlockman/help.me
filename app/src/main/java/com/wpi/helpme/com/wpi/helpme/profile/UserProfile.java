@@ -71,6 +71,7 @@ public class UserProfile {
                 ", userName='" + userName + '\'' +
                 ", email='" + email + '\'' +
                 ", filters=" + filters +
+                ", deviceToken=" + deviceToken +
                 '}';
     }
 
