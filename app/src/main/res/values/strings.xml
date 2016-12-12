@@ -9,4 +9,11 @@
     <string name="cancel">Cancel</string>
     <string name="timeInfo">Until when is this request valid?</string>
     <string name="confirm">Confirm and Get Help</string>
+
+    <!-- EditFiltersActivity -->
+    <string name="edit_filter_new_filter_default_text">New Filter Item</string>
+    <string name="edit_filter_edit_dialog_title">Modify Filter</string>
+    <string name="edit_filter_remove_filter_text">Remove</string>
+    <string name="edit_filter_save_filter_text">Save</string>
+    <string name="edit_filter_add_item">Add...</string>
 </resources>
