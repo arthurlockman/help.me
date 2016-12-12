@@ -19,7 +19,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".LocationActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -42,11 +42,6 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
-
-        <activity android:name=".LocationActivity">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
 
         <service android:name=".FirebaseTokenRegistrationService">
             <intent-filter>
