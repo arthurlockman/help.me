@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,8 +30,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.wpi.helpme.com.wpi.helpme.EditFiltersActivity;
 import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
 import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     private static final String TAG = "LoginActivity";
@@ -100,6 +106,31 @@ public class LoginActivity extends AppCompatActivity {
                 tv.setText("Sign out");
                 return;
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.settings_menu_item:
+                try {
+                    List<String> filters = HelpMeApplication.getInstance().getUserProfile().getFilters();
+                    Intent openFilterEditor = new Intent(this, EditFiltersActivity.class);
+                    startActivity(openFilterEditor);
+                    return true;
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "User profile not loaded.");
+                    return false;
+                }
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 

@@ -47,17 +47,18 @@
             android:name=".LocationActivity"
             android:label="@string/title_activity_location"
         </activity>
+
         <service android:name=".FirebaseTokenRegistrationService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
-        <service
-            android:name=".FirebaseMessagingService">
+        <service android:name=".FirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+
         <activity android:name=".RequestMain">
             android:name=".LocationActivity"
             android:label="@string/title_activity_location"
@@ -74,5 +75,8 @@
             android:name=".LocationActivity"
             android:label="@string/title_activity_location"
         </activity>
+        <activity android:name=".com.wpi.helpme.EditFiltersActivity">
+        </activity>
     </application>
+
 </manifest>
