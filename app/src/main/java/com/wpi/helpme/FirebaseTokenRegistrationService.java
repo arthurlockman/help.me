@@ -20,7 +20,9 @@ public class FirebaseTokenRegistrationService extends FirebaseInstanceIdService
         super.onTokenRefresh();
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
-        // TODO: Send token to server
+
+        this.syncNewToken(refreshedToken);
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("registration_id", refreshedToken);
@@ -31,5 +33,18 @@ public class FirebaseTokenRegistrationService extends FirebaseInstanceIdService
     {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         return preferences.getString("registration_id", null);
+    }
+
+    private void syncNewToken(String token) {
+        try {
+            HelpMeApplication.getInstance().getUserProfile().setDeviceToken(token);
+            HelpMeApplication.getInstance().syncProfileToDatabase();
+        } catch (NullPointerException e) {
+            // Only exception thrown because profile may not exist on first install
+            Log.d(TAG, "User profile does not exist.");
+        } catch (Exception e) {
+            // All else fails catch
+            e.printStackTrace();
+        }
     }
 }
