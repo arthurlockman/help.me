@@ -1,31 +1,25 @@
 package com.wpi.helpme.com.wpi.helpme;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.wpi.helpme.HelpMeApplication;
-import com.wpi.helpme.LoginActivity;
 import com.wpi.helpme.R;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 public class EditFiltersActivity extends AppCompatActivity {
     private static final String TAG = "EditFiltersActivity";
@@ -51,6 +45,7 @@ public class EditFiltersActivity extends AppCompatActivity {
 
                 final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(EditFiltersActivity.this);
                 dialogBuilder.setView(dialogView);
+                dialogBuilder.setTitle("Modify Filter");
 
                 final EditText textView = (EditText) dialogView
                         .findViewById(R.id.edit_filter_dialog_text);
@@ -60,13 +55,14 @@ public class EditFiltersActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Log.d(TAG, "Clicked save with text: " + textView.getText());
-                                updateFilters(itemIndex, textView.getText().toString());
+                                updateFilterText(itemIndex, textView.getText().toString());
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("Remove", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                Log.d(TAG, "Clicked cancel on dialog.");
+                                Log.d(TAG, "Clicked remove on dialog.");
+                                removeFilter(itemIndex);
                             }
                         });
 
@@ -103,7 +99,12 @@ public class EditFiltersActivity extends AppCompatActivity {
         }
     }
 
-    private void updateFilters(int filterIndex, String newFilter) {
+    private void removeFilter(int filterIndex) {
+        HelpMeApplication.getInstance().getUserProfile().getFilters().remove(filterIndex);
+        updateFiltersView();
+    }
+
+    private void updateFilterText(int filterIndex, String newFilter) {
         HelpMeApplication.getInstance().getUserProfile().getFilters().set(filterIndex, newFilter);
         updateFiltersView();
     }
