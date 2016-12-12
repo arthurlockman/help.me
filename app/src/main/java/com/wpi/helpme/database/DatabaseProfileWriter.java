@@ -1,4 +1,4 @@
-package com.wpi.helpme.com.wpi.helpme.database;
+package com.wpi.helpme.database;
 
 import android.util.Log;
 
@@ -7,7 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
-import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
+import com.wpi.helpme.profile.UserProfile;
 
 /**
  * This class represents a singleton instance that can be used to write user profiles to the

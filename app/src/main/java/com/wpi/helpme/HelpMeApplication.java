@@ -5,8 +5,8 @@ import android.util.Log;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
-import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
+import com.wpi.helpme.database.DatabaseProfileWriter;
+import com.wpi.helpme.profile.UserProfile;
 
 /**
  * This class represents the high level application that persists over all activities.

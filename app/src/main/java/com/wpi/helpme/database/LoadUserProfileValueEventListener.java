@@ -1,4 +1,4 @@
-package com.wpi.helpme.com.wpi.helpme.database;
+package com.wpi.helpme.database;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,7 +8,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.wpi.helpme.HelpMeApplication;
-import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
+import com.wpi.helpme.profile.UserProfile;
 
 /**
  * This class represents the callback listener that executes when a profile is loaded at user login.

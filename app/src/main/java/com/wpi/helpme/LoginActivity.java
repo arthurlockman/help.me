@@ -29,10 +29,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.wpi.helpme.com.wpi.helpme.EditFiltersActivity;
-import com.wpi.helpme.com.wpi.helpme.database.DatabaseProfileWriter;
-import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
+import com.wpi.helpme.database.DatabaseProfileWriter;
+import com.wpi.helpme.profile.UserProfile;
 
 import java.util.List;
 
@@ -46,6 +44,9 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthListener;
     private DatabaseReference mDatabaseRef;
 
+    /**
+     * @see {@link AppCompatActivity#onCreate(Bundle)}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +64,9 @@ public class LoginActivity extends AppCompatActivity {
                 // If no user, start sign in process
                 FirebaseUser user = mFAuth.getCurrentUser();
                 if (user != null) {
-                    // TODO Remove toast
                     Toast.makeText(getApplicationContext(),
-                            "Already signed in as " + user.getDisplayName(), Toast.LENGTH_SHORT)
+                            getString(R.string.login_already_signed_in) + user.getDisplayName(),
+                            Toast.LENGTH_SHORT)
                             .show();
                 } else {
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
@@ -82,13 +83,13 @@ public class LoginActivity extends AppCompatActivity {
                 // If no user, do nothing
                 // If user exists, start sign out process
                 if (mFAuth.getCurrentUser() != null) {
-                    // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Signed out", Toast.LENGTH_SHORT)
+                    Toast.makeText(getApplicationContext(), getString(R.string.login_sign_out),
+                            Toast.LENGTH_SHORT)
                             .show();
                     signOutGoogleAccount();
                 } else {
-                    // TODO Remove toast
-                    Toast.makeText(getApplicationContext(), "Already signed out",
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.login_already_signed_out),
                             Toast.LENGTH_SHORT)
                             .show();
                 }
@@ -101,36 +102,10 @@ public class LoginActivity extends AppCompatActivity {
             View v = signOutButton.getChildAt(i);
 
             if (v instanceof TextView) {
-                // TODO Move to strings
                 TextView tv = (TextView) v;
-                tv.setText("Sign out");
+                tv.setText(getString(R.string.login_sign_out));
                 return;
             }
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = this.getMenuInflater();
-        inflater.inflate(R.menu.settings_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.settings_menu_item:
-                try {
-                    List<String> filters = HelpMeApplication.getInstance().getUserProfile().getFilters();
-                    Intent openFilterEditor = new Intent(this, EditFiltersActivity.class);
-                    startActivity(openFilterEditor);
-                    return true;
-                } catch (NullPointerException e) {
-                    Log.d(TAG, "User profile not loaded.");
-                    return false;
-                }
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -153,7 +128,6 @@ public class LoginActivity extends AppCompatActivity {
                 .enableAutoManage(this, new GoogleApiClient.OnConnectionFailedListener() {
                     @Override
                     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                        // TODO Do something if connection fails
                         Log.d(TAG, "Google API Client connection failed.");
                     }
                 })
@@ -180,14 +154,6 @@ public class LoginActivity extends AppCompatActivity {
         this.checkAlreadyLoggedIn();
     }
 
-    private void checkAlreadyLoggedIn() {
-        FirebaseUser user = mFAuth.getCurrentUser();
-        if (user != null) {
-            // Loads profile to memory
-            loadProfile(user.getUid(), user.getEmail(), user.getDisplayName());
-        }
-    }
-
     /**
      * Signs the current user out of the application with their Google account.
      */
@@ -199,18 +165,51 @@ public class LoginActivity extends AppCompatActivity {
         Auth.GoogleSignInApi.signOut(mApiClient).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(@NonNull Status status) {
-                Log.d(TAG, "Signed out");
+                Log.d(TAG, getString(R.string.login_signed_out));
                 mDatabaseRef.onDisconnect();
             }
         });
     }
 
+    /**
+     * Checks if the user is already logged in, and retrieves their user profile.
+     */
+    private void checkAlreadyLoggedIn() {
+        FirebaseUser user = mFAuth.getCurrentUser();
+        if (user != null) {
+            // Loads profile to application memory
+            loadProfile(user.getUid(), user.getEmail(), user.getDisplayName());
+        }
+    }
+
+    /**
+     * Writes the user profile on log in if it does not already exist in the database.
+     *
+     * @param userId
+     *         The unique user ID.
+     * @param email
+     *         The email address.
+     * @param userName
+     *         The display user name.
+     */
+    private void loadProfile(String userId, String email, String userName) {
+        DatabaseProfileWriter
+                .loadDatabaseProfile(HelpMeApplication.getInstance().getDatabaseReference(),
+                        new UserProfile(userId, email, userName));
+    }
+
+    /**
+     * @see {@link AppCompatActivity#onStart()}
+     */
     @Override
     public void onStart() {
         super.onStart();
         mFAuth.addAuthStateListener(mAuthListener);
     }
 
+    /**
+     * @see {@link AppCompatActivity#onStop()}
+     */
     @Override
     public void onStop() {
         super.onStop();
@@ -219,6 +218,44 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * @see {@link AppCompatActivity#onCreateOptionsMenu(Menu)}
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.settings_menu, menu);
+        return true;
+    }
+
+    /**
+     * @see {@link AppCompatActivity#onOptionsItemSelected(MenuItem)}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.settings_menu_item:
+                try {
+                    // Try to get filters from profile, if null it will throw exception
+                    List<String> filters = HelpMeApplication.getInstance().getUserProfile()
+                            .getFilters();
+
+                    // Start editor activity
+                    Intent openFilterEditor = new Intent(this, EditFiltersActivity.class);
+                    startActivity(openFilterEditor);
+                    return true;
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "User profile not loaded.");
+                    return false;
+                }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * @see {@link AppCompatActivity#onActivityResult(int, int, Intent)}
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -253,23 +290,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Writes the user profile on log in if it does not already exist in the database.
-     *
-     * @param userId
-     *         The unique user ID.
-     * @param email
-     *         The email address.
-     * @param userName
-     *         The display user name.
-     */
-    private void loadProfile(String userId, String email, String userName) {
-        DatabaseProfileWriter
-                .loadDatabaseProfile(HelpMeApplication.getInstance().getDatabaseReference(), new UserProfile(userId, email, userName));
-    }
-
-    /**
      * Launches the location activity.
-     * @param v The {@link View} associated with this callback.
+     *
+     * @param v
+     *         The {@link View} associated with this callback.
      */
     public void openLocationActivity(View v) {
         Intent getLocation = new Intent(this, LocationActivity.class);
@@ -278,7 +302,9 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Launches the help request activity.
-     * @param v The {@link View} associated with this callback.
+     *
+     * @param v
+     *         The {@link View} associated with this callback.
      */
     public void openRequestActivity(View v) {
         Intent getLocation = new Intent(this, RequestMain.class);

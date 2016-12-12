@@ -10,6 +10,13 @@
     <string name="timeInfo">Until when is this request valid?</string>
     <string name="confirm">Confirm and Get Help</string>
 
+    <!-- LoginActivity -->
+    <string name="login_sign_out">Sign Out</string>
+    <string name="login_signed_out">Signed out</string>
+    <string name="login_already_signed_out">Already signed out</string>
+    <string name="login_already_signed_in">Already signed in as </string>
+    <string name="login_signed_in">Signed in</string>
+
     <!-- EditFiltersActivity -->
     <string name="edit_filter_new_filter_default_text">New Filter Item</string>
     <string name="edit_filter_edit_dialog_title">Modify Filter</string>

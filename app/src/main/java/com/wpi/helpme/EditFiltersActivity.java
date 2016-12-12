@@ -1,4 +1,4 @@
-package com.wpi.helpme.com.wpi.helpme;
+package com.wpi.helpme;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,9 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-
-import com.wpi.helpme.HelpMeApplication;
-import com.wpi.helpme.R;
 
 import java.util.ArrayList;
 

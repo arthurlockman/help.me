@@ -1,4 +1,4 @@
-package com.wpi.helpme.com.wpi.helpme.profile;
+package com.wpi.helpme.profile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,10 @@ import java.util.List;
  * This class represents the user profile object to be stored in the database.
  */
 public class UserProfile {
+    private static final String DEFAULT_FILTER_1 = "test_value_1";
+    private static final String DEFAULT_FILTER_2 = "test_value_2";
+    private static final String DEFAULT_FILTER_3 = "test_value_3";
+
     private String userId;
     private String userName;
     private String email;
@@ -55,9 +59,9 @@ public class UserProfile {
         this.userName = userName;
         this.deviceToken = deviceToken;
 
-        filters.add("test_value_1");
-        filters.add("test_value_2");
-        filters.add("test_value_3");
+        filters.add(DEFAULT_FILTER_1);
+        filters.add(DEFAULT_FILTER_2);
+        filters.add(DEFAULT_FILTER_3);
     }
 
     /**
