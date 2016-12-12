@@ -342,8 +342,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         } else {
             mMap.addMarker(new MarkerOptions()
                     .position(mDefaultLocation)
-                    .title(getString(R.string.default_info_title))
-                    .snippet(getString(R.string.default_info_snippet)));
+                    .title("title")
+                    .snippet("info"));
         }
     }
 

@@ -7,7 +7,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
+import com.wpi.helpme.com.wpi.helpme.profile.UserProfile;
 
 /**
  * This class represents a singleton instance that can be used to write user profiles to the
@@ -16,44 +16,23 @@ import com.google.firebase.database.ValueEventListener;
 public class DatabaseProfileWriter {
     private static final String PROFILES_DIR = "profiles/";
     private static final String TAG = "DatabaseProfileWriter";
-    private static DatabaseProfileWriter instance;
 
     /**
-     * Creates a DatabaseProfileWriter instance.
-     */
-    private DatabaseProfileWriter() {
-    }
-
-    /**
-     * Returns the global instance for this class.
-     *
-     * @return a DatabaseProfileWriter
-     */
-    public static DatabaseProfileWriter getInstance() {
-        if (instance == null) {
-            instance = new DatabaseProfileWriter();
-        }
-        return instance;
-    }
-
-    /**
-     * Retrieves the profile object from the database for the specified user profile. Executes the
-     * provided callback depending on the existence of the database entry.
+     * Retrieves the profile object from the database for the specified user profile. Loads the
+     * profile into the main application as the main profile instance. If the profile is new, writes
+     * it to the database.
      *
      * @param db
      *         The {@link DatabaseReference} for the Firebase database root.
-     * @param userId
-     *         The user ID of the user to check.
-     * @param listener
-     *         The one time listener to execute to get the profile.
+     * @param profile
+     *         The {@link UserProfile} of the user to check.
      */
-    public void retrieveProfile(DatabaseReference db, String userId,
-                                ValueEventListener listener) {
+    public static void loadDatabaseProfile(DatabaseReference db, final UserProfile profile) {
         // Go to profiles entry
-        final DatabaseReference dbRef = db.child(PROFILES_DIR + userId);
+        final DatabaseReference dbRef = db.child(PROFILES_DIR + profile.getUserId());
 
         // Add one time listener to "retrieve" value
-        dbRef.addListenerForSingleValueEvent(listener);
+        dbRef.addListenerForSingleValueEvent(new LoadUserProfileValueEventListener(profile));
     }
 
     /**
@@ -64,7 +43,7 @@ public class DatabaseProfileWriter {
      * @param profile
      *         The {@link UserProfile} to write.
      */
-    public void writeProfile(DatabaseReference db, final UserProfile profile) {
+    public static void writeProfile(DatabaseReference db, final UserProfile profile) {
         // Go to profiles entry
         DatabaseReference dbRef = db.child(PROFILES_DIR + profile.getUserId());
 
