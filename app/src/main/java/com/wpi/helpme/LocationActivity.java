@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.wpi.helpme.database.DatabaseRequestReader;
 
 //Class take and modified from online google tutorial / demo: https://github.com/googlemaps/android-samples/tree/master/tutorials/CurrentPlaceDetailsOnMap
 
@@ -347,6 +348,8 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                     .title("title")
                     .snippet("info"));
         }
+
+        DatabaseRequestReader.readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference());
     }
 
     /**

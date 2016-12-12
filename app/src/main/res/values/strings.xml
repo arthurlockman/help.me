@@ -14,7 +14,7 @@
     <string name="login_sign_out">Sign Out</string>
     <string name="login_signed_out">Signed out</string>
     <string name="login_already_signed_out">Already signed out</string>
-    <string name="login_already_signed_in">Already signed in as </string>
+    <string name="login_already_signed_in">Already signed in as</string>
     <string name="login_signed_in">Signed in</string>
 
     <!-- EditFiltersActivity -->

@@ -65,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
                 FirebaseUser user = mFAuth.getCurrentUser();
                 if (user != null) {
                     Toast.makeText(getApplicationContext(),
-                            getString(R.string.login_already_signed_in) + user.getDisplayName(),
+                            getString(R.string.login_already_signed_in) + " " + user.getDisplayName(),
                             Toast.LENGTH_SHORT)
                             .show();
                 } else {
