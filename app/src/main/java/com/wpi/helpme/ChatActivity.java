@@ -46,7 +46,6 @@ public class ChatActivity extends AppCompatActivity {
 
             URLConnection connection = new URL("http://help.rthr.me/chatid?id=" + URLEncoder.encode(group, "UTF-8")).openConnection();
             connection.setRequestProperty("Accept-Charset", "UTF-8");
-            InputStream response = connection.getInputStream();
 
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (connection.getInputStream())));
