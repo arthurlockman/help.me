@@ -19,6 +19,8 @@
     <string name="edit_filters_menu_item">Edit Filters</string>
     <string name="request_help">Help Me</string>
     <string name="user_not_logged_in">You are not logged in</string>
+    <string name="refresh_map">Refresh Map</string>
+    <string name="refreshing_data_now">Refreshing data now...</string>
 
     <!-- EditFiltersActivity -->
     <string name="edit_filter_new_filter_default_text">New Filter Item</string>

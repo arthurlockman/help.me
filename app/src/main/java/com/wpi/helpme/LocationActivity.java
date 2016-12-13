@@ -397,6 +397,10 @@ public class LocationActivity extends AppCompatActivity
             case R.id.settings_menu_sign_out:
                 this.doSignOutProcess();
                 return true;
+            case R.id.settings_menu_refresh_map:
+                Toast.makeText(getApplicationContext(), getString(R.string.refreshing_data_now), Toast.LENGTH_SHORT).show();
+                this.refreshMarkerData();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -473,22 +477,26 @@ public class LocationActivity extends AppCompatActivity
                                     FirebaseUser user = mFAuth.getCurrentUser();
                                     loadProfile(user.getUid(),
                                             user.getEmail(), user.getDisplayName());
-
-                                    DatabaseRequestReader
-                                            .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
-                                                    new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
-                                                            updateMarkers();
-                                                            Log.d(TAG, "Retrieved new requests and updated markers.");
-                                                        }
-                                                    });
+                                    refreshMarkerData();
                                 }
                             }
                         });
             }
         }
+    }
+
+    private void refreshMarkerData() {
+        DatabaseRequestReader
+                .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                helpRequests.clear();
+                                helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
+                                updateMarkers();
+                                Log.d(TAG, "Retrieved new requests and updated markers.");
+                            }
+                        });
     }
 
     /**
