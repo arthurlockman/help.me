@@ -1,8 +1,8 @@
 package com.wpi.helpme;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import static com.wpi.helpme.RequestDescription.NOTES;
@@ -22,7 +22,7 @@ public class RequestTime extends AppCompatActivity {
         bundle = intent.getExtras();
     }
 
-    public void requestConfirm (View view) {
+    public void requestConfirm(View view) {
         Intent myIntent = new Intent(this, RequestConfirmation.class);
         myIntent.putExtra(TOPIC, bundle.getString(TOPIC));
         myIntent.putExtra(NOTES, bundle.getString(NOTES));

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="match_parent" android:layout_width="match_parent">
-    <item android:id="@+id/settings_menu_item"
-          android:title="Edit Filters"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+    <item
+        android:id="@+id/settings_menu_refresh_map"
+        android:title="@string/refresh_map"/>
+    <item
+        android:id="@+id/settings_menu_sign_in"
+        android:title="@string/sign_in_menu_item"/>
+    <item
+        android:id="@+id/settings_menu_sign_out"
+        android:title="@string/sign_out_menu_item"/>
+    <item
+        android:id="@+id/settings_menu_edit_filter"
+        android:title="@string/edit_filters_menu_item"/>
 </menu>

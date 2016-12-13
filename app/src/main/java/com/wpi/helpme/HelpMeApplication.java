@@ -6,8 +6,11 @@ import android.util.Log;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.wpi.helpme.database.DatabaseProfileWriter;
+import com.wpi.helpme.database.HelpRequest;
 import com.wpi.helpme.database.PreferencesManager;
 import com.wpi.helpme.profile.UserProfile;
+
+import java.util.List;
 
 /**
  * This class represents the high level application that persists over all activities.
@@ -18,6 +21,7 @@ public class HelpMeApplication extends Application {
     private static UserProfile profile = null;
     private static DatabaseReference databaseReference;
     private static PreferencesManager preferencesManager;
+    private static List<HelpRequest> requests;
 
     /**
      * Returns the single instance of the application.
@@ -74,11 +78,37 @@ public class HelpMeApplication extends Application {
     }
 
     /**
+     * Clears the current user profile.
+     */
+    public synchronized void clearUserProfile() {
+        profile = null;
+    }
+
+    /**
      * Returns the single instance of the preferences manager.
      *
      * @return a {@link PreferencesManager}
      */
-    public PreferencesManager getPreferencesManager() {
+    public synchronized PreferencesManager getPreferencesManager() {
         return preferencesManager;
+    }
+
+    /**
+     * Updates the list of requests with the new list.
+     *
+     * @param newRequests
+     *         The {@link List<HelpRequest>} of new requests.
+     */
+    public synchronized void updateRequests(List<HelpRequest> newRequests) {
+        requests = newRequests;
+    }
+
+    /**
+     * Returns the list of requests from the database.
+     *
+     * @return a {@link List<HelpRequest>}
+     */
+    public synchronized List<HelpRequest> getRequests() {
+        return requests;
     }
 }
