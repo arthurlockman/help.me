@@ -4,9 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -14,11 +14,10 @@ import android.widget.ImageView;
 import java.io.FileOutputStream;
 
 public class RequestDescription extends AppCompatActivity {
-    static final int REQUEST_IMAGE_CAPTURE = 1;
     public final static String TOPIC = "com.helpme.tommy.helprequest.TOPIC";
     public final static String NOTES = "com.helpme.tommy.helprequest.NOTES";
     public final static String PHOTO = "com.helpme.tommy.helprequest.PHOTO";
-
+    static final int REQUEST_IMAGE_CAPTURE = 1;
     EditText topicText;
     EditText notesText;
     ImageView requestImage;
@@ -35,13 +34,6 @@ public class RequestDescription extends AppCompatActivity {
         topicText = (EditText) findViewById(R.id.requestTopic);
         notesText = (EditText) findViewById(R.id.requestNotes);
         requestImage = (ImageView) findViewById(R.id.requestImage);
-    }
-
-    public void takePhoto(View view) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -64,6 +56,13 @@ public class RequestDescription extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    public void takePhoto(View view) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+        }
     }
 
     public void requestTime(View view) {
