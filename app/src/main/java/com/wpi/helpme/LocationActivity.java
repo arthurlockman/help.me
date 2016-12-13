@@ -548,7 +548,7 @@ public class LocationActivity extends AppCompatActivity
         if (mApiClient.isConnected()) {
             getDeviceLocation();
         }
-        updateMarkers();
+        refreshMarkerData();
     }
 
     /**
