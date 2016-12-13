@@ -151,6 +151,14 @@ public class EditFiltersActivity extends AppCompatActivity {
     }
 
     /**
+     * Syncs profile to database with new filters.
+     */
+    private void saveFilters() {
+        // Sync profile when closing this activity so users do not have to manually save
+        HelpMeApplication.getInstance().syncProfileToDatabase();
+    }
+
+    /**
      * Updates the list view by retrieving the updated profile filters.
      */
     private void updateFiltersView() {
@@ -166,14 +174,6 @@ public class EditFiltersActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         this.saveFilters();
-    }
-
-    /**
-     * Syncs profile to database with new filters.
-     */
-    private void saveFilters() {
-        // Sync profile when closing this activity so users do not have to manually save
-        HelpMeApplication.getInstance().syncProfileToDatabase();
     }
 
     /**

@@ -232,59 +232,6 @@ public class LocationActivity extends AppCompatActivity
     }
 
     /**
-     * Adds markers for places nearby the device and turns the My Location feature on or off,
-     * provided location permission has been granted.
-     */
-    private void updateMarkers() {
-        if (mMap == null) {
-            return;
-        }
-
-        // Clear map of markers
-        mMap.clear();
-
-        if (mLocationPermissionGranted) {
-            // Get the businesses and other points of interest located
-            // nearest to the device's current location.
-//            @SuppressWarnings("MissingPermission")
-//            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-//                    .getCurrentPlace(mApiClient, null);
-//            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-//                @Override
-//                public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
-//                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-//                        // Add a marker for each place near the device's current location, with an
-//                        // info window showing place information.
-//                        String attributions = (String) placeLikelihood.getPlace().getAttributions();
-//                        String snippet = (String) placeLikelihood.getPlace().getAddress();
-//                        if (attributions != null) {
-//                            snippet = snippet + "\n" + attributions;
-//                        }
-//
-//                        mMap.addMarker(new MarkerOptions()
-//                                .position(placeLikelihood.getPlace().getLatLng())
-//                                .title((String) placeLikelihood.getPlace().getName())
-//                                .snippet(snippet));
-//                    }
-//                    // Release the place likelihood buffer.
-//                    likelyPlaces.release();
-//                }
-//            });
-
-            for (HelpRequest req : helpRequests) {
-                LatLng loc = new LatLng(req.getLatitude(), req.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(loc).title(req.getTitleText())
-                        .snippet(req.getBodyText()));
-            }
-        } else {
-            mMap.addMarker(new MarkerOptions()
-                    .position(mDefaultLocation)
-                    .title("title")
-                    .snippet("info"));
-        }
-    }
-
-    /**
      * Gets the current location of the device and starts the location update notifications.
      */
     private void getDeviceLocation() {
@@ -387,7 +334,8 @@ public class LocationActivity extends AppCompatActivity
                     startActivity(openFilterEditor);
                     return true;
                 } catch (NullPointerException e) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in),
+                            Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "User profile not loaded.");
                     return false;
                 }
@@ -398,7 +346,8 @@ public class LocationActivity extends AppCompatActivity
                 this.doSignOutProcess();
                 return true;
             case R.id.settings_menu_refresh_map:
-                Toast.makeText(getApplicationContext(), getString(R.string.refreshing_data_now), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.refreshing_data_now),
+                        Toast.LENGTH_SHORT).show();
                 this.refreshMarkerData();
                 return true;
             default:
@@ -422,6 +371,20 @@ public class LocationActivity extends AppCompatActivity
         }
     }
 
+    private void refreshMarkerData() {
+        DatabaseRequestReader
+                .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                helpRequests.clear();
+                                helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
+                                updateMarkers();
+                                Log.d(TAG, "Retrieved new requests and updated markers.");
+                            }
+                        });
+    }
+
     /**
      * Signs the current user out of the application with their Google account.
      */
@@ -439,6 +402,59 @@ public class LocationActivity extends AppCompatActivity
         });
 
         this.clearCurrentUserLogin();
+    }
+
+    /**
+     * Adds markers for places nearby the device and turns the My Location feature on or off,
+     * provided location permission has been granted.
+     */
+    private void updateMarkers() {
+        if (mMap == null) {
+            return;
+        }
+
+        // Clear map of markers
+        mMap.clear();
+
+        if (mLocationPermissionGranted) {
+            // Get the businesses and other points of interest located
+            // nearest to the device's current location.
+//            @SuppressWarnings("MissingPermission")
+//            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+//                    .getCurrentPlace(mApiClient, null);
+//            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+//                @Override
+//                public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
+//                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+//                        // Add a marker for each place near the device's current location, with an
+//                        // info window showing place information.
+//                        String attributions = (String) placeLikelihood.getPlace().getAttributions();
+//                        String snippet = (String) placeLikelihood.getPlace().getAddress();
+//                        if (attributions != null) {
+//                            snippet = snippet + "\n" + attributions;
+//                        }
+//
+//                        mMap.addMarker(new MarkerOptions()
+//                                .position(placeLikelihood.getPlace().getLatLng())
+//                                .title((String) placeLikelihood.getPlace().getName())
+//                                .snippet(snippet));
+//                    }
+//                    // Release the place likelihood buffer.
+//                    likelyPlaces.release();
+//                }
+//            });
+
+            for (HelpRequest req : helpRequests) {
+                LatLng loc = new LatLng(req.getLatitude(), req.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(loc).title(req.getTitleText())
+                        .snippet(req.getBodyText()));
+            }
+        } else {
+            mMap.addMarker(new MarkerOptions()
+                    .position(mDefaultLocation)
+                    .title("title")
+                    .snippet("info"));
+        }
     }
 
     private void clearCurrentUserLogin() {
@@ -483,20 +499,6 @@ public class LocationActivity extends AppCompatActivity
                         });
             }
         }
-    }
-
-    private void refreshMarkerData() {
-        DatabaseRequestReader
-                .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                helpRequests.clear();
-                                helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
-                                updateMarkers();
-                                Log.d(TAG, "Retrieved new requests and updated markers.");
-                            }
-                        });
     }
 
     /**
@@ -576,7 +578,8 @@ public class LocationActivity extends AppCompatActivity
             Intent getLocation = new Intent(this, RequestMain.class);
             startActivity(getLocation);
         } catch (NullPointerException e) {
-            Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in),
+                    Toast.LENGTH_SHORT).show();
             Log.d(TAG, "User profile not loaded.");
         }
     }

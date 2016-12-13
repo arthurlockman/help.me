@@ -1,75 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_request_description"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.wpi.helpme.RequestDescription">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/activity_request_description"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context="com.wpi.helpme.RequestDescription">
 
     <EditText
+        android:id="@+id/requestTopic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:id="@+id/requestTopic"
+        android:layout_alignParentTop="true"
+        android:ems="10"
         android:hint="@string/selectTopic"
-        android:inputType="text" />
+        android:inputType="text"/>
 
     <EditText
+        android:id="@+id/requestNotes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/requestImage"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/requestTopic"
+        android:ems="10"
+        android:hint="@string/notes"
         android:inputType="textMultiLine"
         android:lines="10"
-        android:scrollbars="vertical"
-        android:ems="10"
-        android:layout_below="@+id/requestTopic"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:id="@+id/requestNotes"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:hint="@string/notes"
-        android:layout_above="@+id/requestImage" />
+        android:scrollbars="vertical"/>
 
     <Button
-        android:text="@string/next"
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/button2"
-        android:onClick="requestTime"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="11dp" />
+        android:layout_marginBottom="11dp"
+        android:onClick="requestTime"
+        android:text="@string/next"/>
 
     <Button
-        android:text="@string/attachPhoto"
+        android:id="@+id/photo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/photo"
-        android:onClick="takePhoto"
         android:layout_below="@+id/requestNotes"
+        android:layout_marginEnd="27dp"
+        android:layout_marginRight="27dp"
+        android:layout_marginTop="50dp"
         android:layout_toLeftOf="@+id/requestImage"
         android:layout_toStartOf="@+id/requestImage"
-        android:layout_marginRight="27dp"
-        android:layout_marginEnd="27dp"
-        android:layout_marginTop="50dp" />
+        android:onClick="takePhoto"
+        android:text="@string/attachPhoto"/>
 
     <ImageView
-        android:layout_width="150dp"
-        app:srcCompat="@android:drawable/list_selector_background"
-        android:layout_marginBottom="27dp"
         android:id="@+id/requestImage"
+        android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_above="@+id/button2"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="27dp"
+        android:layout_marginEnd="19dp"
         android:layout_marginRight="19dp"
-        android:layout_marginEnd="19dp" />
+        app:srcCompat="@android:drawable/list_selector_background"/>
 </RelativeLayout>
