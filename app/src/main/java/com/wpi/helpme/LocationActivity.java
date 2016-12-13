@@ -360,6 +360,18 @@ public class LocationActivity extends AppCompatActivity
                         Toast.LENGTH_SHORT).show();
                 this.refreshMarkerData();
                 return true;
+            case R.id.settings_menu_study_groups:
+                try {
+                    HelpMeApplication.getInstance().getUserProfile().getFilters();
+                    Intent openStudyGroups = new Intent(this, ChatListActivity.class);
+                    startActivity(openStudyGroups);
+                    return true;
+                } catch (NullPointerException e) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in),
+                            Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "User profile not loaded.");
+                    return false;
+                }
             default:
                 return super.onOptionsItemSelected(item);
         }
