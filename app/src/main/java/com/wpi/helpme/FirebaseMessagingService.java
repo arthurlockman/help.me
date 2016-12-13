@@ -1,5 +1,7 @@
 package com.wpi.helpme;
 
+import android.util.Log;
+
 import com.google.firebase.messaging.RemoteMessage;
 
 public class FirebaseMessagingService
@@ -10,5 +12,7 @@ public class FirebaseMessagingService
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
+        Log.d("MessagingService", remoteMessage.getNotification().getTitle() + ": "
+                + remoteMessage.getNotification().getBody());
     }
 }

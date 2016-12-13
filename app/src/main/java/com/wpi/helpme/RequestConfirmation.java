@@ -65,7 +65,7 @@ public class RequestConfirmation extends AppCompatActivity {
     public void submitRequest(View view) {
         logRef.child("requests-inbox/" + topic).setValue(new Request(topic, notes));
 
-        Intent myIntent = new Intent(this, LoginActivity.class);
+        Intent myIntent = new Intent(this, LocationActivity.class);
         startActivity(myIntent);
     }
 

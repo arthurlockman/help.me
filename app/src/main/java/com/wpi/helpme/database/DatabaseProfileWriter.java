@@ -10,8 +10,7 @@ import com.google.firebase.database.Transaction;
 import com.wpi.helpme.profile.UserProfile;
 
 /**
- * This class represents a singleton instance that can be used to write user profiles to the
- * database.
+ * This class represents a static class that can be used to write user profiles to the database.
  */
 public class DatabaseProfileWriter {
     private static final String PROFILES_DIR = "profiles/";

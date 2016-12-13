@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.wpi.helpme">
+    package="com.wpi.helpme">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".HelpMeApplication"
@@ -19,18 +19,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".LocationActivity"
             android:screenOrientation="portrait">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -41,42 +41,27 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key"/>
-
-        <activity android:name=".LocationActivity">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
+            android:value="@string/google_maps_key" />
 
         <service android:name=".FirebaseTokenRegistrationService">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
         <service android:name=".FirebaseMessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <activity android:name=".RequestMain">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".RequestDescription">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".RequestConfirmation">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".RequestTime">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".EditFiltersActivity">
-        </activity>
+        <activity android:name=".RequestMain"></activity>
+        <activity android:name=".RequestDescription"></activity>
+        <activity android:name=".RequestConfirmation"></activity>
+        <activity android:name=".RequestTime"></activity>
+        <activity android:name=".EditFiltersActivity" />
+        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatListActivity"></activity>
+        <activity android:name=".AddChatActivity"></activity>
     </application>
 
 </manifest>
