@@ -9,7 +9,6 @@ import com.wpi.helpme.HelpMeApplication;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class represents the callback listener that executes when the requests are loaded from the
@@ -17,10 +16,6 @@ import java.util.Map;
  */
 public class LoadRequestValueEventListener implements ValueEventListener {
     private static final String TAG = "LoadRequestValueEventListener";
-    private static final String BODY = "body";
-    private static final String TITLE = "title";
-    private static final String LAT = "lat";
-    private static final String LONG = "long";
     private Runnable run;
 
     /**
@@ -44,25 +39,16 @@ public class LoadRequestValueEventListener implements ValueEventListener {
             List<HelpRequest> requests = new ArrayList<>();
 
             // Get list of objects in requests
-            List<Object> objectMap = (ArrayList<Object>) dataSnapshot.getValue();
-
-            // Parse each request
-            for (Object obj : objectMap) {
-                if (obj instanceof Map) {
-                    Map<String, Object> mapObj = (Map<String, Object>) obj;
-
-                    // May be null value
-                    try {
-                        String body = (String) mapObj.get(BODY);
-                        String title = (String) mapObj.get(TITLE);
-                        double lat = (Double) mapObj.get(LAT);
-                        double lon = (Double) mapObj.get(LONG);
-                        requests.add(new HelpRequest("", "", title, body, lat, lon, ""));
-                    } catch (NullPointerException e) {
-                        Log.d(TAG, "Failed to get request attributes of null request.", e);
-                    }
+            for (DataSnapshot requestSnapshot : dataSnapshot.getChildren()) {
+                HelpRequest req = requestSnapshot.getValue(HelpRequest.class);
+                try {
+                    Log.d(TAG, req.toString());
+                    requests.add(req);
+                } catch (NullPointerException e) {
+                    Log.d(TAG, "Failed to get request attributes of null request.", e);
                 }
             }
+
 
             // Update application with request list.
             HelpMeApplication.getInstance().updateRequests(requests);
