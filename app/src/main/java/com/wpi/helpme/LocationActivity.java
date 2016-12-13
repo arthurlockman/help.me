@@ -475,8 +475,8 @@ public class LocationActivity extends AppCompatActivity
             // Add each request and its location to the map
             for (HelpRequest req : helpRequests) {
                 LatLng loc = new LatLng(req.getLatitude(), req.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(loc).title(req.getTitleText())
-                        .snippet(req.getBodyText()));
+                mMap.addMarker(new MarkerOptions().position(loc).title(req.getTitle())
+                        .snippet(req.getBody()));
             }
         } else {
             // Add default location
@@ -628,6 +628,7 @@ public class LocationActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
+        HelpMeApplication.getInstance().updateCurrentLocation(mCurrentLocation);
         updateMarkers();
     }
 

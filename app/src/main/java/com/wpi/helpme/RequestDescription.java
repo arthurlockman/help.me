@@ -17,17 +17,13 @@ import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -72,15 +68,12 @@ public class RequestDescription extends AppCompatActivity {
 
         }
         ArrayList<String> topicList = new ArrayList<>();
-        try
-        {
+        try {
             JSONArray array = new JSONArray(json);
-            for (int i = 0; i < array.length(); i++)
-            {
+            for (int i = 0; i < array.length(); i++) {
                 topicList.add(array.getString(i));
             }
-        } catch (JSONException e)
-        {
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         Log.d("RequestDescription", Arrays.toString(topicList.toArray()));

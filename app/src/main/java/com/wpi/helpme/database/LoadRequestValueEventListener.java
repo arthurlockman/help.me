@@ -57,7 +57,7 @@ public class LoadRequestValueEventListener implements ValueEventListener {
                         String title = (String) mapObj.get(TITLE);
                         double lat = (Double) mapObj.get(LAT);
                         double lon = (Double) mapObj.get(LONG);
-                        requests.add(new HelpRequest(title, body, lat, lon));
+                        requests.add(new HelpRequest("", "", title, body, lat, lon, ""));
                     } catch (NullPointerException e) {
                         Log.d(TAG, "Failed to get request attributes of null request.", e);
                     }

@@ -1,8 +1,10 @@
 package com.wpi.helpme;
 
 import android.app.Application;
+import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.wpi.helpme.database.DatabaseProfileWriter;
@@ -22,6 +24,7 @@ public class HelpMeApplication extends Application {
     private static DatabaseReference databaseReference;
     private static PreferencesManager preferencesManager;
     private static List<HelpRequest> requests;
+    private static Location currentLocation;
 
     /**
      * Returns the single instance of the application.
@@ -110,5 +113,21 @@ public class HelpMeApplication extends Application {
      */
     public synchronized List<HelpRequest> getRequests() {
         return requests;
+    }
+
+    /**
+     * Updates the current location of the user.
+     * @param loc The {@link Location} of the user.
+     */
+    public synchronized void updateCurrentLocation(Location loc) {
+        currentLocation = loc;
+    }
+
+    /**
+     * Returns the last updated location of the user.
+     * @return a {@link Location}
+     */
+    public synchronized Location getCurrentLocation() {
+        return currentLocation;
     }
 }
