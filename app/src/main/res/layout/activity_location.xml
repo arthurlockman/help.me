@@ -17,12 +17,12 @@
 
     <Button
         android:id="@+id/request_help"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0"
         android:gravity="center"
         android:onClick="openRequestActivity"
         android:text="@string/request_help"
-        android:textAlignment="gravity"/>
+        android:textAlignment="gravity"
+        />
 </LinearLayout>
