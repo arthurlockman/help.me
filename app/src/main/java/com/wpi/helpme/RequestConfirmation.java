@@ -79,7 +79,7 @@ public class RequestConfirmation extends AppCompatActivity {
                         HelpMeApplication.getInstance().getCurrentLocation().getLongitude(), time));
 
         Intent myIntent = new Intent(this, LocationActivity.class);
-        startActivity(myIntent);
+        startActivity(myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP));
     }
 }
 
