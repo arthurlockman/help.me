@@ -8,6 +8,7 @@ import android.widget.TimePicker;
 
 import static com.wpi.helpme.RequestDescription.NOTES;
 import static com.wpi.helpme.RequestDescription.PHOTO;
+import static com.wpi.helpme.RequestDescription.TITLE;
 import static com.wpi.helpme.RequestDescription.TOPIC;
 
 
@@ -35,6 +36,7 @@ public class RequestTime extends AppCompatActivity {
         Intent myIntent = new Intent(this, RequestConfirmation.class);
         myIntent.putExtra(TOPIC, bundle.getString(TOPIC));
         myIntent.putExtra(NOTES, bundle.getString(NOTES));
+        myIntent.putExtra(TITLE, bundle.getString(TITLE));
         myIntent.putExtra(TIME, clockTime);
         myIntent.putExtra(PHOTO, getIntent().getStringExtra(PHOTO));
         this.startActivity(myIntent);
