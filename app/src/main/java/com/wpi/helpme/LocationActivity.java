@@ -111,6 +111,8 @@ public class LocationActivity extends AppCompatActivity
 
         this.setUpAuthentication();
         mApiClient.connect();
+
+        // Do sign in process in case user is not logged in
         this.doSignInProcess();
     }
 
@@ -215,6 +217,9 @@ public class LocationActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Completes the sign in process for Google authentication.
+     */
     private void doSignInProcess() {
         // If user exists, do nothing
         // If no user, start sign in process
@@ -249,6 +254,7 @@ public class LocationActivity extends AppCompatActivity
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
+
         /*
          * Get the best and most recent location of the device, which may be null in rare
          * cases when a location is not available.
@@ -323,6 +329,7 @@ public class LocationActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            // Edit profile filters
             case R.id.settings_menu_edit_filter:
                 try {
                     // Try to get filters from profile, if null it will throw exception
@@ -339,12 +346,15 @@ public class LocationActivity extends AppCompatActivity
                     Log.d(TAG, "User profile not loaded.");
                     return false;
                 }
+                // Sign in
             case R.id.settings_menu_sign_in:
                 this.doSignInProcess();
                 return true;
+            // Sign out
             case R.id.settings_menu_sign_out:
                 this.doSignOutProcess();
                 return true;
+            // Refresh map markers
             case R.id.settings_menu_refresh_map:
                 Toast.makeText(getApplicationContext(), getString(R.string.refreshing_data_now),
                         Toast.LENGTH_SHORT).show();
@@ -355,6 +365,9 @@ public class LocationActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Completes the sign out process for Google authentication.
+     */
     private void doSignOutProcess() {
         // If no user, do nothing
         // If user exists, start sign out process
@@ -371,6 +384,9 @@ public class LocationActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Refreshes the markers by reloading new help requests from the database.
+     */
     private void refreshMarkerData() {
         DatabaseRequestReader
                 .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
@@ -444,12 +460,14 @@ public class LocationActivity extends AppCompatActivity
 //                }
 //            });
 
+            // Add each request and its location to the map
             for (HelpRequest req : helpRequests) {
                 LatLng loc = new LatLng(req.getLatitude(), req.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(loc).title(req.getTitleText())
                         .snippet(req.getBodyText()));
             }
         } else {
+            // Add default location
             mMap.addMarker(new MarkerOptions()
                     .position(mDefaultLocation)
                     .title("title")
@@ -457,6 +475,9 @@ public class LocationActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Clears the current user session. Clears the user profile and the map markers.
+     */
     private void clearCurrentUserLogin() {
         this.helpRequests.clear();
         HelpMeApplication.getInstance().clearUserProfile();
@@ -491,8 +512,12 @@ public class LocationActivity extends AppCompatActivity
                                 } else {
                                     Log.d(TAG, "signInWithCredential:successful");
                                     FirebaseUser user = mFAuth.getCurrentUser();
+
+                                    // Load profile
                                     loadProfile(user.getUid(),
                                             user.getEmail(), user.getDisplayName());
+
+                                    // Update map markers
                                     refreshMarkerData();
                                 }
                             }
@@ -572,6 +597,7 @@ public class LocationActivity extends AppCompatActivity
      *         The {@link View} associated with this callback.
      */
     public void openRequestActivity(View v) {
+        // If there is no user, do not launch request activity
         try {
             HelpMeApplication.getInstance().getUserProfile()
                     .getFilters();
@@ -609,13 +635,18 @@ public class LocationActivity extends AppCompatActivity
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
         mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
-
+            /**
+             * @see {@link com.google.android.gms.maps.GoogleMap.InfoWindowAdapter#getInfoWindow(Marker)}
+             */
             @Override
             // Return null here, so that getInfoContents() is called next.
             public View getInfoWindow(Marker arg0) {
                 return null;
             }
 
+            /**
+             * @see {@link com.google.android.gms.maps.GoogleMap.InfoWindowAdapter#getInfoContents(Marker)}
+             */
             @Override
             public View getInfoContents(Marker marker) {
                 // Inflate the layouts for the info window, title and snippet.
