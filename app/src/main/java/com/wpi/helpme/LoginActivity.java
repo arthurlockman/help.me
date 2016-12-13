@@ -307,7 +307,12 @@ public class LoginActivity extends AppCompatActivity {
      *         The {@link View} associated with this callback.
      */
     public void openRequestActivity(View v) {
-        Intent getLocation = new Intent(this, RequestMain.class);
-        startActivity(getLocation);
+        Intent getHelp = new Intent(this, RequestMain.class);
+        startActivity(getHelp);
+    }
+
+    public void openChatListActivity(View v) {
+        Intent getChatting = new Intent(this, ChatListActivity.class);
+        startActivity(getChatting);
     }
 }

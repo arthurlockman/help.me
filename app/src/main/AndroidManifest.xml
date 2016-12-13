@@ -43,9 +43,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".LocationActivity">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"</activity>
+        <activity android:name=".LocationActivity"></activity>
 
         <service android:name=".FirebaseTokenRegistrationService">
             <intent-filter>
@@ -58,30 +56,14 @@
             </intent-filter>
         </service>
 
-        <activity android:name=".RequestMain">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".RequestDescription">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".RequestConfirmation">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".RequestTime">
-            android:name=".LocationActivity"
-            android:label="@string/title_activity_location"
-        </activity>
-        <activity android:name=".EditFiltersActivity"></activity>
-        <activity android:name=".ChatActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".RequestMain"></activity>
+        <activity android:name=".RequestDescription"></activity>
+        <activity android:name=".RequestConfirmation"></activity>
+        <activity android:name=".RequestTime"></activity>
+        <activity android:name=".EditFiltersActivity" />
+        <activity android:name=".ChatActivity"></activity>
+        <activity android:name=".ChatListActivity"></activity>
+        <activity android:name=".AddChatActivity"></activity>
     </application>
 
 </manifest>
