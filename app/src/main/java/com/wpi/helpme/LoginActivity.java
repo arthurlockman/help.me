@@ -31,60 +31,60 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        // Sign in button
-        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // If user exists, do nothing
-                // If no user, start sign in process
-                FirebaseUser user = mFAuth.getCurrentUser();
-                if (user != null) {
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.already_signed_in_toast) + " " +
-                                    user.getDisplayName(),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                } else {
-                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
-                    startActivityForResult(signInIntent, RC_LOGIN);
-                }
-            }
-        });
-
-        // Sign out button
-        SignInButton signOutButton = (SignInButton) findViewById(R.id.sign_out_button);
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // If no user, do nothing
-                // If user exists, start sign out process
-                if (mFAuth.getCurrentUser() != null) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.signed_out_toast),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                    //signOutGoogleAccount();
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.already_signed_out_toast),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                }
-            }
-        });
-
-        // Modify com.google.android.gms.common.SignInButton to say "Sign out"
-        // Referenced from http://stackoverflow.com/questions/18040815/can-i-edit-the-text-of-sign-in-button-on-google
-        for (int i = 0; i < signOutButton.getChildCount(); i++) {
-            View v = signOutButton.getChildAt(i);
-
-            if (v instanceof TextView) {
-                TextView tv = (TextView) v;
-                tv.setText(getString(R.string.signed_out_toast));
-                return;
-            }
-        }
+//
+//        // Sign in button
+//        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+//        signInButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // If user exists, do nothing
+//                // If no user, start sign in process
+//                FirebaseUser user = mFAuth.getCurrentUser();
+//                if (user != null) {
+//                    Toast.makeText(getApplicationContext(),
+//                            getString(R.string.already_signed_in_toast) + " " +
+//                                    user.getDisplayName(),
+//                            Toast.LENGTH_SHORT)
+//                            .show();
+//                } else {
+//                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
+//                    startActivityForResult(signInIntent, RC_LOGIN);
+//                }
+//            }
+//        });
+//
+//        // Sign out button
+//        SignInButton signOutButton = (SignInButton) findViewById(R.id.sign_out_button);
+//        signOutButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                // If no user, do nothing
+//                // If user exists, start sign out process
+//                if (mFAuth.getCurrentUser() != null) {
+//                    Toast.makeText(getApplicationContext(), getString(R.string.signed_out_toast),
+//                            Toast.LENGTH_SHORT)
+//                            .show();
+//                    //signOutGoogleAccount();
+//                } else {
+//                    Toast.makeText(getApplicationContext(),
+//                            getString(R.string.already_signed_out_toast),
+//                            Toast.LENGTH_SHORT)
+//                            .show();
+//                }
+//            }
+//        });
+//
+//        // Modify com.google.android.gms.common.SignInButton to say "Sign out"
+//        // Referenced from http://stackoverflow.com/questions/18040815/can-i-edit-the-text-of-sign-in-button-on-google
+//        for (int i = 0; i < signOutButton.getChildCount(); i++) {
+//            View v = signOutButton.getChildAt(i);
+//
+//            if (v instanceof TextView) {
+//                TextView tv = (TextView) v;
+//                tv.setText(getString(R.string.signed_out_toast));
+//                return;
+//            }
+//        }
     }
 
 

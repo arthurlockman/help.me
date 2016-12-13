@@ -78,11 +78,18 @@ public class HelpMeApplication extends Application {
     }
 
     /**
+     * Clears the current user profile.
+     */
+    public synchronized void clearUserProfile() {
+        profile = null;
+    }
+
+    /**
      * Returns the single instance of the preferences manager.
      *
      * @return a {@link PreferencesManager}
      */
-    public PreferencesManager getPreferencesManager() {
+    public synchronized PreferencesManager getPreferencesManager() {
         return preferencesManager;
     }
 
@@ -92,7 +99,7 @@ public class HelpMeApplication extends Application {
      * @param newRequests
      *         The {@link List<HelpRequest>} of new requests.
      */
-    public void updateRequests(List<HelpRequest> newRequests) {
+    public synchronized void updateRequests(List<HelpRequest> newRequests) {
         requests = newRequests;
     }
 
@@ -101,7 +108,7 @@ public class HelpMeApplication extends Application {
      *
      * @return a {@link List<HelpRequest>}
      */
-    public List<HelpRequest> getRequests() {
+    public synchronized List<HelpRequest> getRequests() {
         return requests;
     }
 }

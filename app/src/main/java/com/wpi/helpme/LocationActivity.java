@@ -23,14 +23,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.PlaceLikelihood;
-import com.google.android.gms.location.places.PlaceLikelihoodBuffer;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -114,17 +111,7 @@ public class LocationActivity extends AppCompatActivity
 
         this.setUpAuthentication();
         mApiClient.connect();
-
-        DatabaseRequestReader
-                .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
-                                updateMarkers();
-                                Log.d(TAG, "Retrieved new requests and updated markers.");
-                            }
-                        });
+        this.doSignInProcess();
     }
 
     /**
@@ -221,7 +208,27 @@ public class LocationActivity extends AppCompatActivity
             }
         };
 
-        this.checkAlreadyLoggedIn();
+        // Loads profile to application memory if logged in
+        if (this.checkAlreadyLoggedIn()) {
+            FirebaseUser user = mFAuth.getCurrentUser();
+            loadProfile(user.getUid(), user.getEmail(), user.getDisplayName());
+        }
+    }
+
+    private void doSignInProcess() {
+        // If user exists, do nothing
+        // If no user, start sign in process
+        FirebaseUser user = mFAuth.getCurrentUser();
+        if (user != null) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.already_signed_in_toast) + " " +
+                            user.getDisplayName(),
+                    Toast.LENGTH_SHORT)
+                    .show();
+        } else {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
+            startActivityForResult(signInIntent, RC_LOGIN);
+        }
     }
 
     /**
@@ -239,30 +246,30 @@ public class LocationActivity extends AppCompatActivity
         if (mLocationPermissionGranted) {
             // Get the businesses and other points of interest located
             // nearest to the device's current location.
-            @SuppressWarnings("MissingPermission")
-            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
-                    .getCurrentPlace(mApiClient, null);
-            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
-                @Override
-                public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
-                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
-                        // Add a marker for each place near the device's current location, with an
-                        // info window showing place information.
-                        String attributions = (String) placeLikelihood.getPlace().getAttributions();
-                        String snippet = (String) placeLikelihood.getPlace().getAddress();
-                        if (attributions != null) {
-                            snippet = snippet + "\n" + attributions;
-                        }
-
-                        mMap.addMarker(new MarkerOptions()
-                                .position(placeLikelihood.getPlace().getLatLng())
-                                .title((String) placeLikelihood.getPlace().getName())
-                                .snippet(snippet));
-                    }
-                    // Release the place likelihood buffer.
-                    likelyPlaces.release();
-                }
-            });
+//            @SuppressWarnings("MissingPermission")
+//            PendingResult<PlaceLikelihoodBuffer> result = Places.PlaceDetectionApi
+//                    .getCurrentPlace(mApiClient, null);
+//            result.setResultCallback(new ResultCallback<PlaceLikelihoodBuffer>() {
+//                @Override
+//                public void onResult(@NonNull PlaceLikelihoodBuffer likelyPlaces) {
+//                    for (PlaceLikelihood placeLikelihood : likelyPlaces) {
+//                        // Add a marker for each place near the device's current location, with an
+//                        // info window showing place information.
+//                        String attributions = (String) placeLikelihood.getPlace().getAttributions();
+//                        String snippet = (String) placeLikelihood.getPlace().getAddress();
+//                        if (attributions != null) {
+//                            snippet = snippet + "\n" + attributions;
+//                        }
+//
+//                        mMap.addMarker(new MarkerOptions()
+//                                .position(placeLikelihood.getPlace().getLatLng())
+//                                .title((String) placeLikelihood.getPlace().getName())
+//                                .snippet(snippet));
+//                    }
+//                    // Release the place likelihood buffer.
+//                    likelyPlaces.release();
+//                }
+//            });
 
             for (HelpRequest req : helpRequests) {
                 LatLng loc = new LatLng(req.getLatitude(), req.getLongitude());
@@ -333,12 +340,8 @@ public class LocationActivity extends AppCompatActivity
     /**
      * Checks if the user is already logged in, and retrieves their user profile.
      */
-    private void checkAlreadyLoggedIn() {
-        FirebaseUser user = mFAuth.getCurrentUser();
-        if (user != null) {
-            // Loads profile to application memory
-            loadProfile(user.getUid(), user.getEmail(), user.getDisplayName());
-        }
+    private boolean checkAlreadyLoggedIn() {
+        return mFAuth.getCurrentUser() != null;
     }
 
     /**
@@ -376,7 +379,7 @@ public class LocationActivity extends AppCompatActivity
             case R.id.settings_menu_edit_filter:
                 try {
                     // Try to get filters from profile, if null it will throw exception
-                    List<String> filters = HelpMeApplication.getInstance().getUserProfile()
+                    HelpMeApplication.getInstance().getUserProfile()
                             .getFilters();
 
                     // Start editor activity
@@ -384,39 +387,34 @@ public class LocationActivity extends AppCompatActivity
                     startActivity(openFilterEditor);
                     return true;
                 } catch (NullPointerException e) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show();
                     Log.d(TAG, "User profile not loaded.");
                     return false;
                 }
             case R.id.settings_menu_sign_in:
-                // If user exists, do nothing
-                // If no user, start sign in process
-                FirebaseUser user = mFAuth.getCurrentUser();
-                if (user != null) {
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.already_signed_in_toast) + " " +
-                                    user.getDisplayName(),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                } else {
-                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mApiClient);
-                    startActivityForResult(signInIntent, RC_LOGIN);
-                }
+                this.doSignInProcess();
+                return true;
             case R.id.settings_menu_sign_out:
-                // If no user, do nothing
-                // If user exists, start sign out process
-                if (mFAuth.getCurrentUser() != null) {
-                    Toast.makeText(getApplicationContext(), getString(R.string.signed_out_toast),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                    signOutGoogleAccount();
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            getString(R.string.already_signed_out_toast),
-                            Toast.LENGTH_SHORT)
-                            .show();
-                }
+                this.doSignOutProcess();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void doSignOutProcess() {
+        // If no user, do nothing
+        // If user exists, start sign out process
+        if (mFAuth.getCurrentUser() != null) {
+            Toast.makeText(getApplicationContext(), getString(R.string.signed_out_toast),
+                    Toast.LENGTH_SHORT)
+                    .show();
+            signOutGoogleAccount();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.already_signed_out_toast),
+                    Toast.LENGTH_SHORT)
+                    .show();
         }
     }
 
@@ -435,6 +433,15 @@ public class LocationActivity extends AppCompatActivity
                 mDatabaseRef.onDisconnect();
             }
         });
+
+        this.clearCurrentUserLogin();
+    }
+
+    private void clearCurrentUserLogin() {
+        this.helpRequests.clear();
+        HelpMeApplication.getInstance().clearUserProfile();
+
+        this.updateMarkers();
     }
 
     /**
@@ -466,6 +473,17 @@ public class LocationActivity extends AppCompatActivity
                                     FirebaseUser user = mFAuth.getCurrentUser();
                                     loadProfile(user.getUid(),
                                             user.getEmail(), user.getDisplayName());
+
+                                    DatabaseRequestReader
+                                            .readRequestsFromDatabase(HelpMeApplication.getInstance().getDatabaseReference(),
+                                                    new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            helpRequests.addAll(HelpMeApplication.getInstance().getRequests());
+                                                            updateMarkers();
+                                                            Log.d(TAG, "Retrieved new requests and updated markers.");
+                                                        }
+                                                    });
                                 }
                             }
                         });
@@ -544,8 +562,15 @@ public class LocationActivity extends AppCompatActivity
      *         The {@link View} associated with this callback.
      */
     public void openRequestActivity(View v) {
-        Intent getLocation = new Intent(this, RequestMain.class);
-        startActivity(getLocation);
+        try {
+            HelpMeApplication.getInstance().getUserProfile()
+                    .getFilters();
+            Intent getLocation = new Intent(this, RequestMain.class);
+            startActivity(getLocation);
+        } catch (NullPointerException e) {
+            Toast.makeText(getApplicationContext(), getString(R.string.user_not_logged_in), Toast.LENGTH_SHORT).show();
+            Log.d(TAG, "User profile not loaded.");
+        }
     }
 
     /**
@@ -611,6 +636,4 @@ public class LocationActivity extends AppCompatActivity
             mMap.getUiSettings().setMyLocationButtonEnabled(false);
         }
     }
-
-
 }

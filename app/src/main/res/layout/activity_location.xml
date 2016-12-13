@@ -23,5 +23,6 @@
         android:layout_gravity="center_horizontal"
         android:text="@string/request_help"
         android:textAlignment="gravity"
-        android:layout_weight="0"/>
+        android:layout_weight="0"
+        android:onClick="openRequestActivity"/>
 </LinearLayout>

@@ -18,6 +18,7 @@
     <string name="already_signed_in_toast">Already signed in as</string>
     <string name="edit_filters_menu_item">Edit Filters</string>
     <string name="request_help">Help Me</string>
+    <string name="user_not_logged_in">You are not logged in</string>
 
     <!-- EditFiltersActivity -->
     <string name="edit_filter_new_filter_default_text">New Filter Item</string>
